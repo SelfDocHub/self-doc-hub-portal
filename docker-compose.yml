@@ -1,0 +1,14 @@
+services:
+  portal:
+    build: .
+    image: self-doc-hub-portal
+    restart: unless-stopped
+    ports:
+      - "${PORTAL_PORT:-3000}:3000"
+    environment:
+      NUXT_DOCS_HUB_URL: ${NUXT_DOCS_HUB_URL:-http://host.docker.internal:8080}
+      NUXT_DOMAIN_OVERRIDE: ${NUXT_DOMAIN_OVERRIDE:-}
+      NUXT_TRUST_PROXY: ${NUXT_TRUST_PROXY:-false}
+      NUXT_SITE_ORIGIN: ${NUXT_SITE_ORIGIN:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
