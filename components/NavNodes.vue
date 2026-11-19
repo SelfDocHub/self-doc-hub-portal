@@ -18,7 +18,7 @@ function contains(n: ManifestNode, id?: string): boolean {
       </details>
       <NuxtLink
         v-else
-        :to="`/${encodeURIComponent(version)}/${encodeURIComponent(n.id)}`"
+        :to="nodeUrl(version, n)"
         class="nav-link"
         :class="{ active: n.id === activeId, deprecated: n.deprecated }"
       >

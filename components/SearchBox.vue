@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SearchResponse } from '~/types/hub'
+import type { UrlNode } from '~/utils/nodeUrl'
 const props = defineProps<{ version: string }>()
 const t = useTexts()
 const q = ref('')
@@ -23,7 +24,7 @@ watch(q, (value) => {
   }, 250)
 })
 watch(() => useRoute().fullPath, () => { open.value = false; q.value = '' })
-const link = (id: string) => `/${encodeURIComponent(props.version)}/${encodeURIComponent(id)}`
+const link = (r: UrlNode) => nodeUrl(props.version, r)
 </script>
 
 <template>
@@ -34,7 +35,7 @@ const link = (id: string) => `/${encodeURIComponent(props.version)}/${encodeURIC
     >
     <div v-if="open && searched" class="search-results">
       <p v-if="!results.length" class="muted">{{ t('site.search_no_results') }}</p>
-      <NuxtLink v-for="r in results" :key="r.id" :to="link(r.id)" class="search-item">
+      <NuxtLink v-for="r in results" :key="r.id" :to="link(r)" class="search-item">
         <span class="search-head">
           <MethodBadge v-if="r.method" :method="r.method" small />
           <strong>{{ r.title }}</strong>

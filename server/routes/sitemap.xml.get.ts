@@ -1,5 +1,6 @@
 import type { Site, SearchEntry } from '~/types/hub'
 import { siteOrigin } from '../utils/origin'
+import { nodeUrl } from '~/utils/nodeUrl'
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
@@ -13,7 +14,7 @@ export default defineEventHandler(async (event) => {
     const map = await hubJson<{ updated_at: string; entries: SearchEntry[] }>(event, `/versions/${encodeURIComponent(version.id)}/sitemap`)
     const lastmod = map.updated_at ? `<lastmod>${esc(map.updated_at)}</lastmod>` : ''
     urls = map.entries
-      .map(e => `<url><loc>${esc(`${origin}/${encodeURIComponent(version.id)}/${encodeURIComponent(e.id)}`)}</loc>${lastmod}</url>`)
+      .map(e => `<url><loc>${esc(`${origin}${nodeUrl(version.id, e)}`)}</loc>${lastmod}</url>`)
       .join('')
   }
   setResponseHeader(event, 'content-type', 'application/xml; charset=utf-8')

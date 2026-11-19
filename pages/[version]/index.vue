@@ -6,7 +6,7 @@ const { data: site } = useNuxtData('site')
 const { data: tree, error } = await useTree(() => version.value)
 if (error.value || !tree.value) throw createError({ statusCode: error.value?.statusCode || 404, fatal: true })
 const t = useTexts()
-const link = (id: string) => `/${encodeURIComponent(version.value)}/${encodeURIComponent(id)}`
+const link = (n: ManifestNode) => nodeUrl(version.value, n)
 
 // The first level of every service is shown as the landing page.
 function leaves(nodes: ManifestNode[]): ManifestNode[] {
@@ -28,7 +28,7 @@ useSeoMeta({ title: () => `${tree.value?.name || version.value} — ${site.value
       <Blocks :blocks="s.description" :version="version" />
       <ul class="plain">
         <li v-for="n in leaves(s.tree).slice(0, 12)" :key="n.id">
-          <NuxtLink :to="link(n.id)" class="row-link">
+          <NuxtLink :to="link(n)" class="row-link">
             <MethodBadge v-if="n.method" :method="n.method" small />
             <span>{{ n.title }}</span>
             <span v-if="n.path" class="muted mono small">{{ n.path }}</span>

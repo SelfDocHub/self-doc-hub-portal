@@ -25,6 +25,15 @@ const { data: node, error } = await useAsyncData<PEndpoint | PPage | null>(
 )
 if (error.value || !node.value) throw createError({ statusCode: error.value?.statusCode || 404, statusMessage: 'Not Found', fatal: true })
 
+// Canonical address: the decorative part is replaced when it is missing or differs (old links keep working).
+{
+  const m = meta.value!
+  const slug = nodeSlug({ id: id.value, kind: m.kind, title: m.title, method: m.method, path: m.path })
+  if ((route.params.slug as string | undefined || '') !== slug) {
+    await navigateTo({ path: nodeUrl(version.value, { id: id.value, kind: m.kind, title: m.title, method: m.method, path: m.path }), query: route.query }, { redirectCode: 301, replace: true })
+  }
+}
+
 const isPage = computed(() => meta.value?.kind === 'page')
 useSeoMeta({
   title: () => `${node.value?.title} — ${site.value?.name}`,
