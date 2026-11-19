@@ -17,6 +17,9 @@ const FONTS: Record<string, string> = {
   serif: 'Georgia, "Times New Roman", Times, serif',
 }
 const RADII: Record<string, string> = { none: '0', small: '3px', medium: '6px', large: '12px' }
+const WEIGHTS: Record<string, number> = { normal: 400, medium: 500, bold: 700 }
+// underline: [normally, on hover]
+const UNDERLINES: Record<string, [string, string]> = { none: ['none', 'none'], hover: ['none', 'underline'], always: ['underline', 'underline'] }
 const COLOR = /^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/
 
 function scheme(colors?: Record<string, string>) {
@@ -26,13 +29,20 @@ function scheme(colors?: Record<string, string>) {
     .join('')
 }
 
-function css(t: Tokens) {
+function css(t: Tokens, headerHeight?: number) {
   const base = [
     `--font:${FONTS[t.font || 'system'] || FONTS.system};`,
     `--radius:${RADII[t.radius || 'medium'] ?? '6px'};`,
     `--space:${t.density === 'compact' ? 0.75 : 1};`,
     `--content-width:${Math.min(1800, Math.max(880, t.content_width || 1200))}px;`,
     `--font-size:${Math.min(20, Math.max(13, t.font_size || 16))}px;`,
+    ...(['header', 'footer'] as const).map((area) => {
+      const [deco, decoHover] = UNDERLINES[(t as any)[`${area}_link_underline`]] || UNDERLINES.hover!
+      const size = Math.min(24, Math.max(12, Number((t as any)[`${area}_link_size`]) || (area === 'header' ? 15 : 14)))
+      const weight = WEIGHTS[(t as any)[`${area}_link_weight`]] || 400
+      return `--${area}-link-deco:${deco};--${area}-link-deco-hover:${decoHover};--${area}-link-size:${size}px;--${area}-link-weight:${weight};`
+    }),
+    `--header-h:${Math.min(120, Math.max(40, Math.round(headerHeight || 64)))}px;`,
   ].join('')
   const light = scheme(t.light), dark = scheme(t.dark)
   return `:root{${base}${light}color-scheme:light}`
@@ -44,7 +54,7 @@ function css(t: Tokens) {
 const favicon = site.value.brand?.favicon
 useHead(() => ({
   htmlAttrs: { lang: lang.value, 'data-theme': theme.value === 'auto' ? undefined : theme.value },
-  style: [{ key: 'tokens', innerHTML: css(site.value!.tokens || {}) }],
+  style: [{ key: 'tokens', innerHTML: css(site.value!.tokens || {}, site.value!.header?.height) }],
   link: favicon ? [{ rel: 'icon', href: favicon.url, type: favicon.content_type }] : [],
 }))
 useSeoMeta({

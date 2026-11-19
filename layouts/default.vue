@@ -14,6 +14,7 @@ const tree = await useTree(() => version.value)
     <div v-if="site?.versions?.find((v: any) => v.hidden)" class="preview-banner">{{ t('site.preview_banner') }}</div>
     <div class="body">
       <aside v-if="version" class="sidebar" :class="{ open: menuOpen }" :aria-label="t('site.menu')">
+        <HeaderLinks class="header-links-mobile" />
         <NavTree v-if="tree.data.value" :manifest="tree.data.value" :version="version" />
       </aside>
       <div v-if="menuOpen" class="scrim" @click="menuOpen = false" />

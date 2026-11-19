@@ -30,14 +30,17 @@ export interface SiteImage { url: string; content_type: string; link?: string }
 export interface SiteVersion { id: string; name: string; updated_at: string; hidden?: boolean }
 export interface FooterLink { text: string; url: string }
 export interface Footer { text?: string; columns?: { title: string; links: FooterLink[] }[]; copyright?: string; links?: FooterLink[] }
+export interface Header { height: number; links: FooterLink[] }
 export interface Tokens {
   light?: Record<string, string>; dark?: Record<string, string>; font?: string; font_size?: number
   radius?: string; density?: string; content_width?: number
+  header_link_underline?: string; header_link_weight?: string; header_link_size?: number
+  footer_link_underline?: string; footer_link_weight?: string; footer_link_size?: number
 }
 export interface Site {
   domain: string; name: string; description?: string; languages: string[]; default_language: string
   tokens: Tokens; brand: { logo_top?: SiteImage; logo_bottom?: SiteImage; favicon?: SiteImage }
-  footer: Footer; versions: SiteVersion[]; default_version: string
+  header?: Header; footer: Footer; versions: SiteVersion[]; default_version: string
 }
 export interface SearchEntry { id: string; kind: string; service: string; title: string; method?: string; path?: string; summary?: string }
 export interface SearchResponse { query: string; total: number; results: SearchEntry[] }
