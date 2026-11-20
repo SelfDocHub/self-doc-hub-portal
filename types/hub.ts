@@ -34,8 +34,11 @@ export interface Header { height: number; links: FooterLink[] }
 export interface Tokens {
   light?: Record<string, string>; dark?: Record<string, string>; font?: string; font_size?: number
   radius?: string; density?: string; content_width?: number
+  // Link style of the top bar / footer: normal state and hover (underline: none | underline, weight: normal | medium | bold).
   header_link_underline?: string; header_link_weight?: string; header_link_size?: number
+  header_link_hover_underline?: string; header_link_hover_weight?: string; header_link_hover_size?: number
   footer_link_underline?: string; footer_link_weight?: string; footer_link_size?: number
+  footer_link_hover_underline?: string; footer_link_hover_weight?: string; footer_link_hover_size?: number
 }
 export interface Site {
   domain: string; name: string; description?: string; languages: string[]; default_language: string

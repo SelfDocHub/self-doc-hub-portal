@@ -18,8 +18,7 @@ const FONTS: Record<string, string> = {
 }
 const RADII: Record<string, string> = { none: '0', small: '3px', medium: '6px', large: '12px' }
 const WEIGHTS: Record<string, number> = { normal: 400, medium: 500, bold: 700 }
-// underline: [normally, on hover]
-const UNDERLINES: Record<string, [string, string]> = { none: ['none', 'none'], hover: ['none', 'underline'], always: ['underline', 'underline'] }
+const underline = (v?: string) => (v === 'underline' ? 'underline' : 'none')
 const COLOR = /^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/
 
 function scheme(colors?: Record<string, string>) {
@@ -36,11 +35,18 @@ function css(t: Tokens, headerHeight?: number) {
     `--space:${t.density === 'compact' ? 0.75 : 1};`,
     `--content-width:${Math.min(1800, Math.max(880, t.content_width || 1200))}px;`,
     `--font-size:${Math.min(20, Math.max(13, t.font_size || 16))}px;`,
+    // Link styles of the top bar and the footer: normal state and hover; an unset hover value repeats the normal one.
     ...(['header', 'footer'] as const).map((area) => {
-      const [deco, decoHover] = UNDERLINES[(t as any)[`${area}_link_underline`]] || UNDERLINES.hover!
-      const size = Math.min(24, Math.max(12, Number((t as any)[`${area}_link_size`]) || (area === 'header' ? 15 : 14)))
-      const weight = WEIGHTS[(t as any)[`${area}_link_weight`]] || 400
-      return `--${area}-link-deco:${deco};--${area}-link-deco-hover:${decoHover};--${area}-link-size:${size}px;--${area}-link-weight:${weight};`
+      const get = (name: string) => (t as any)[`${area}_link_${name}`]
+      const size = (v: unknown, fallback: number) => Math.min(24, Math.max(12, Number(v) || fallback))
+      const normal = { deco: underline(get('underline') ?? 'none'), weight: WEIGHTS[get('weight')] || (area === 'header' ? 500 : 400), size: size(get('size'), area === 'header' ? 15 : 14) }
+      const hover = {
+        deco: get('hover_underline') ? underline(get('hover_underline')) : normal.deco,
+        weight: WEIGHTS[get('hover_weight')] || normal.weight,
+        size: get('hover_size') ? size(get('hover_size'), normal.size) : normal.size,
+      }
+      return `--${area}-link-deco:${normal.deco};--${area}-link-weight:${normal.weight};--${area}-link-size:${normal.size}px;`
+        + `--${area}-link-hover-deco:${hover.deco};--${area}-link-hover-weight:${hover.weight};--${area}-link-hover-size:${hover.size}px;`
     }),
     `--header-h:${Math.min(120, Math.max(40, Math.round(headerHeight || 64)))}px;`,
   ].join('')

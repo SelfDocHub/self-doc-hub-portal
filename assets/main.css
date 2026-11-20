@@ -39,8 +39,9 @@ code { background: var(--c-code-bg); padding: 0.1em 0.35em; border-radius: calc(
   text-decoration: var(--header-link-deco, none);
 }
 .header-links a { color: var(--c-header-link, var(--c-header-text)); }
-.header-links a:hover { color: var(--c-header-link-hover, var(--c-header-link, var(--c-header-text))); text-decoration: var(--header-link-deco-hover, underline); }
-.header-links-mobile a:hover { text-decoration: var(--header-link-deco-hover, underline); }
+.header-links a:hover { color: var(--c-header-link-hover, var(--c-header-link, var(--c-header-text))); text-decoration: var(--header-link-hover-deco, underline);
+  font-size: var(--header-link-hover-size, var(--header-link-size, 15px)); font-weight: var(--header-link-hover-weight, var(--header-link-weight, 500)); }
+.header-links-mobile a:hover { text-decoration: var(--header-link-hover-deco, underline); font-weight: var(--header-link-hover-weight, 500); }
 .header-links-mobile { display: none; }
 .header a { color: inherit; }
 .brand { display: flex; align-items: center; font-weight: 700; font-size: 1.1rem; }
@@ -119,7 +120,8 @@ figure { margin: 16px 0; }
   color: var(--c-footer-link, var(--c-footer-text)); font-size: var(--footer-link-size, 14px); font-weight: var(--footer-link-weight, 400);
   text-decoration: var(--footer-link-deco, none);
 }
-.footer a:hover { color: var(--c-footer-link-hover, var(--c-footer-link, var(--c-footer-text))); text-decoration: var(--footer-link-deco-hover, underline); }
+.footer a:hover { color: var(--c-footer-link-hover, var(--c-footer-link, var(--c-footer-text))); text-decoration: var(--footer-link-hover-deco, underline);
+  font-size: var(--footer-link-hover-size, var(--footer-link-size, 14px)); font-weight: var(--footer-link-hover-weight, var(--footer-link-weight, 400)); }
 .footer-inner { max-width: calc(var(--content-width) + 280px); margin: 0 auto; padding: 28px 24px; display: flex; flex-direction: column; gap: 20px; }
 .footer-top { display: flex; gap: 48px; flex-wrap: wrap; }
 .footer-about { flex: 1 1 260px; max-width: 420px; }
