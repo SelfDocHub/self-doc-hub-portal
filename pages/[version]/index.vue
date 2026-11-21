@@ -22,7 +22,7 @@ usePageMeta(() => ({ title: tree.value?.name || undefined, description: site.val
     <h1>{{ tree?.name || site?.name }}</h1>
     <p v-if="site?.description" class="lead">{{ site.description }}</p>
     <section v-for="s in tree?.services" :key="s.slug" class="service">
-      <h2>{{ s.name }}</h2>
+      <h2><NuxtLink :to="groupUrl(version, s.slug, undefined, prefix)">{{ s.name }}</NuxtLink></h2>
       <p v-if="s.spec_version || s.version_date" class="muted small">
         <span v-if="s.spec_version">{{ t('export.doc.version') }} {{ s.spec_version }}</span>
         <span v-if="s.version_date"> · {{ s.version_date }}</span>

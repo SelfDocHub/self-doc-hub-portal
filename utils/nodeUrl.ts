@@ -15,3 +15,8 @@ export function nodeUrl(version: string, n: UrlNode, prefix = ''): string {
   const slug = nodeSlug(n)
   return `${prefix}/${encodeURIComponent(version)}/${encodeURIComponent(n.id)}${slug ? '/' + encodeURIComponent(slug) : ''}`
 }
+
+/** Address of a service landing page (`tag` empty) or of a tag / folder inside a service: /{version}/service/{service}[/{tag}]. */
+export function groupUrl(version: string, service: string, tag?: string, prefix = ''): string {
+  return `${prefix}/${encodeURIComponent(version)}/service/${encodeURIComponent(service)}${tag ? '/' + encodeURIComponent(tag) : ''}`
+}

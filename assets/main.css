@@ -145,3 +145,9 @@ figure { margin: 16px 0; }
   .search input { width: 140px; }
 }
 @media (prefers-reduced-motion: reduce) { .sidebar { transition: none; } }
+
+/* Service / tag titles in the menu are links. */
+.nav-service-link, .nav-group-link { color: inherit; text-decoration: none; }
+.nav-service-link:hover, .nav-group-link:hover { text-decoration: underline; }
+.nav-service-link.active, .nav-group-link.active { color: var(--c-accent, inherit); }
+.nav-group > summary { display: list-item; }
