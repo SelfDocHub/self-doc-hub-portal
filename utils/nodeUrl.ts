@@ -10,7 +10,8 @@ export function nodeSlug(n: UrlNode): string {
   return slugOf(raw).slice(0, 80).replace(/-+$/g, '')
 }
 
-export function nodeUrl(version: string, n: UrlNode): string {
+/** `prefix` is the language prefix ("" for the default language, "/ru" for others). */
+export function nodeUrl(version: string, n: UrlNode, prefix = ''): string {
   const slug = nodeSlug(n)
-  return `/${encodeURIComponent(version)}/${encodeURIComponent(n.id)}${slug ? '/' + encodeURIComponent(slug) : ''}`
+  return `${prefix}/${encodeURIComponent(version)}/${encodeURIComponent(n.id)}${slug ? '/' + encodeURIComponent(slug) : ''}`
 }

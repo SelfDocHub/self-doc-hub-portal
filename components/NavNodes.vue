@@ -2,6 +2,7 @@
 import type { ManifestNode } from '~/types/hub'
 const props = defineProps<{ nodes: ManifestNode[]; version: string }>()
 const route = useRoute()
+const prefix = useLangPrefix()
 const activeId = computed(() => route.params.id as string | undefined)
 
 function contains(n: ManifestNode, id?: string): boolean {
@@ -18,7 +19,7 @@ function contains(n: ManifestNode, id?: string): boolean {
       </details>
       <NuxtLink
         v-else
-        :to="nodeUrl(version, n)"
+        :to="nodeUrl(version, n, prefix)"
         class="nav-link"
         :class="{ active: n.id === activeId, deprecated: n.deprecated }"
       >

@@ -40,10 +40,24 @@ export interface Tokens {
   footer_link_underline?: string; footer_link_weight?: string; footer_link_size?: number
   footer_link_hover_underline?: string; footer_link_hover_weight?: string; footer_link_hover_size?: number
 }
+export interface Language { code: string; name: string }
+export interface SiteSocial { title: string; description: string; card_type: string; twitter_site: string; image: SiteImage | null }
 export interface Site {
-  domain: string; name: string; description?: string; languages: string[]; default_language: string
+  domain: string
+  /** Language of the texts, header links and footer of this response; `languages` lists every language of the site. */
+  language: string; languages: Language[]; default_language: string
+  name: string; title_template: string; description: string; keywords: string[]
   tokens: Tokens; brand: { logo_top?: SiteImage; logo_bottom?: SiteImage; favicon?: SiteImage }
-  header?: Header; footer: Footer; versions: SiteVersion[]; default_version: string
+  header: Header; footer: Footer; versions: SiteVersion[]; default_version: string
+  social: SiteSocial
+  verification: { google: string; yandex: string; bing: string }
+  analytics: { google_analytics: string; yandex_metrika: string }
+  noindex: boolean
+  /** Public origin of the portal (added by the portal's own /api/site). */
+  origin?: string
 }
 export interface SearchEntry { id: string; kind: string; service: string; title: string; method?: string; path?: string; summary?: string }
 export interface SearchResponse { query: string; total: number; results: SearchEntry[] }
+export interface SitemapResponse {
+  updated_at: string; default_language: string; languages: { code: string; prefix: string }[]; entries: SearchEntry[]
+}

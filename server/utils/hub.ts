@@ -42,7 +42,7 @@ function hubUrl(event: H3Event, path: string): string {
 }
 
 /** Calls the docs-hub public API and returns parsed JSON; maps upstream errors to the same status codes. */
-export async function hubJson<T>(event: H3Event, path: string, query?: Record<string, string | number>): Promise<T> {
+export async function hubJson<T>(event: H3Event, path: string, query?: Record<string, string | number | undefined>): Promise<T> {
   try {
     return (await $fetch(hubUrl(event, path), { headers: hubHeaders(event), query, timeout: 10_000 })) as T
   } catch (e: any) {
@@ -76,4 +76,29 @@ export async function hubBinary(event: H3Event, path: string, query?: Record<str
   // Preview content must never be cached by shared caches.
   if (previewToken(event)) event.node.res.setHeader('cache-control', 'private, no-store')
   return new Uint8Array(await res.arrayBuffer())
+}
+
+/** Fetches a text file (robots.txt, llms.txt) from docs-hub and answers with it, keeping the 404 of a disabled file. */
+export async function hubText(event: H3Event, path: string, contentType: string, query?: Record<string, string | undefined>): Promise<string> {
+  const params = new URLSearchParams()
+  for (const [k, v] of Object.entries(query || {})) if (v) params.set(k, v)
+  let res: Response
+  try {
+    res = await fetch(hubUrl(event, path) + (params.size ? '?' + params : ''), {
+      headers: hubHeaders(event, { Accept: 'text/plain, text/markdown, */*' }),
+      signal: AbortSignal.timeout(15_000),
+    })
+  } catch (e: any) {
+    console.error('[docs-hub]', path, e?.message || e)
+    throw createError({ statusCode: 502, statusMessage: 'Documentation service unavailable' })
+  }
+  if (!res.ok) throw createError({ statusCode: res.status === 404 ? 404 : 502, statusMessage: res.status === 404 ? 'Not Found' : 'Bad Gateway' })
+  event.node.res.setHeader('content-type', contentType)
+  event.node.res.setHeader('cache-control', previewToken(event) ? 'private, no-store' : 'public, max-age=60, stale-while-revalidate=300')
+  return await res.text()
+}
+
+/** A language code of a request (?lang= or a path prefix); anything else is ignored so docs-hub uses the default. */
+export function cleanLang(value: unknown): string | undefined {
+  return typeof value === 'string' && /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})?$/.test(value) ? value : undefined
 }

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import type { PEndpoint, PPage } from '~/types/hub'
 
+definePageMeta({ path: '/:lang([a-z]{2,3}|[a-z]{2,3}-[A-Za-z0-9]{2,8})?/:version([0-9a-f]{8,})/:id/:slug?' })
+
 const route = useRoute()
 const version = computed(() => route.params.version as string)
 const id = computed(() => route.params.id as string)
 const { data: site } = useNuxtData('site')
 const { data: tree } = await useTree(() => version.value)
 const api = useApi()
+const prefix = useLangPrefix()
 
 const meta = computed(() => flattenTree(tree.value).get(id.value))
 if (!meta.value) throw createError({ statusCode: 404, statusMessage: 'Not Found', fatal: true })
@@ -30,17 +33,12 @@ if (error.value || !node.value) throw createError({ statusCode: error.value?.sta
   const m = meta.value!
   const slug = nodeSlug({ id: id.value, kind: m.kind, title: m.title, method: m.method, path: m.path })
   if ((route.params.slug as string | undefined || '') !== slug) {
-    await navigateTo({ path: nodeUrl(version.value, { id: id.value, kind: m.kind, title: m.title, method: m.method, path: m.path }), query: route.query }, { redirectCode: 301, replace: true })
+    await navigateTo({ path: nodeUrl(version.value, { id: id.value, kind: m.kind, title: m.title, method: m.method, path: m.path }, prefix.value), query: route.query }, { redirectCode: 301, replace: true })
   }
 }
 
 const isPage = computed(() => meta.value?.kind === 'page')
-useSeoMeta({
-  title: () => `${node.value?.title} — ${site.value?.name}`,
-  description: () => node.value?.summary || '',
-  ogTitle: () => node.value?.title,
-  ogDescription: () => node.value?.summary || '',
-})
+usePageMeta(() => ({ title: node.value?.title, description: node.value?.summary }))
 </script>
 
 <template>

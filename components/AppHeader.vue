@@ -4,14 +4,20 @@ const menu = defineModel<boolean>('menu', { default: false })
 const { data: site } = useNuxtData('site')
 const t = useTexts()
 const lang = useLang()
+const prefix = useLangPrefix()
 const theme = inject<Ref<'auto' | 'light' | 'dark'>>('theme')!
 const route = useRoute()
 
 function setVersion(e: Event) {
-  navigateTo('/' + encodeURIComponent((e.target as HTMLSelectElement).value))
+  navigateTo(`${prefix.value}/${encodeURIComponent((e.target as HTMLSelectElement).value)}`)
 }
+// The language is a part of the address: the same page under the prefix of the chosen language (a full page load).
 function setLang(e: Event) {
-  lang.value = (e.target as HTMLSelectElement).value
+  const code = (e.target as HTMLSelectElement).value
+  const s = site.value!
+  const path = prefix.value && route.path.startsWith(prefix.value) ? route.path.slice(prefix.value.length) || '/' : route.path
+  const target = code === s.default_language ? path : `/${code}${path === '/' ? '' : path}`
+  navigateTo(target, { external: true })
 }
 function toggleTheme() {
   const dark = document.documentElement.dataset.theme === 'dark'
@@ -25,7 +31,7 @@ function toggleTheme() {
     <div class="header-inner">
       <div class="header-start">
         <button v-if="hasMenu" class="icon-btn menu-btn" :aria-label="t('site.menu')" @click="menu = !menu">☰</button>
-        <NuxtLink to="/" class="brand">
+        <NuxtLink :to="prefix || '/'" class="brand">
           <img v-if="site?.brand?.logo_top" :src="site.brand.logo_top.url" :alt="site.name" class="logo">
           <span v-else class="brand-name">{{ site?.name }}</span>
         </NuxtLink>
@@ -43,7 +49,7 @@ function toggleTheme() {
         <label v-if="site && site.languages.length > 1" class="select-wrap">
           <span class="sr-only">{{ t('site.language') }}</span>
           <select :value="lang" @change="setLang">
-            <option v-for="l in site.languages" :key="l" :value="l">{{ l.toUpperCase() }}</option>
+            <option v-for="l in site.languages" :key="l.code" :value="l.code">{{ l.name || l.code.toUpperCase() }}</option>
           </select>
         </label>
         <ClientOnly>

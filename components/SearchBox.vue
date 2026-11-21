@@ -24,7 +24,8 @@ watch(q, (value) => {
   }, 250)
 })
 watch(() => useRoute().fullPath, () => { open.value = false; q.value = '' })
-const link = (r: UrlNode) => nodeUrl(props.version, r)
+const prefix = useLangPrefix()
+const link = (r: UrlNode) => nodeUrl(props.version, r, prefix.value)
 </script>
 
 <template>

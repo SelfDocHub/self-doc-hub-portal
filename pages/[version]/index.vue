@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import type { ManifestNode } from '~/types/hub'
+definePageMeta({ path: '/:lang([a-z]{2,3}|[a-z]{2,3}-[A-Za-z0-9]{2,8})?/:version([0-9a-f]{8,})' })
 const route = useRoute()
 const version = computed(() => route.params.version as string)
 const { data: site } = useNuxtData('site')
 const { data: tree, error } = await useTree(() => version.value)
 if (error.value || !tree.value) throw createError({ statusCode: error.value?.statusCode || 404, fatal: true })
 const t = useTexts()
-const link = (n: ManifestNode) => nodeUrl(version.value, n)
+const prefix = useLangPrefix()
+const link = (n: ManifestNode) => nodeUrl(version.value, n, prefix.value)
 
 // The first level of every service is shown as the landing page.
 function leaves(nodes: ManifestNode[]): ManifestNode[] {
   return nodes.flatMap(n => (n.kind === 'folder' || n.kind === 'tag' ? leaves(n.children || []) : [n]))
 }
-useSeoMeta({ title: () => `${tree.value?.name || version.value} — ${site.value?.name}`, description: () => site.value?.description || '' })
+usePageMeta(() => ({ title: tree.value?.name || undefined, description: site.value?.description }))
 </script>
 
 <template>
